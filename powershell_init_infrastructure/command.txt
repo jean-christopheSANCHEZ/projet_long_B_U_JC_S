@@ -1,0 +1,17 @@
+Need docker launch and a terminal with admnistrator right
+
+###Exemple of command for container.ps1###
+
+Create network (subnet) : .\containers.ps1 create_network r1 192.168.1.0/24
+
+Create container : .\containers.ps1 create Alpine alpine r1 192.168.1.32 1
+
+Delete network : .\containers.ps1 delete network r 1
+
+Delete container : .\containers.ps1 delete Alpine 1
+
+Print : -network : .\containers.ps1 print network
+        -container : .\containers.ps1 print container
+
+
+Use a .conf file to init all the infrastructure : .\containers.ps1 parse .\conf\network.conf /
