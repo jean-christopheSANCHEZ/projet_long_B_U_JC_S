@@ -40,7 +40,7 @@ function parse_file($path, $separator){
 
 #function : open_terminal
     #open a terminal in the current container
-    #parameters : $container_name, $image, $number
+    #parameters : $command
 function open_terminal($container_name, $command){
     $encoded2 = [Convert]::ToBase64String( [Text.Encoding]::Unicode.GetBytes($command))
     Start-Process powershell -Verb Runas -ArgumentList '-noExit','-encodedCommand',$encoded2
@@ -61,7 +61,7 @@ function create_containers($container_name, $image, $network, $ip, $number){
     #parameters : $container_name, $image, $network, $ip
 function create_single_container($container_name, $image, $network, $ip){
     $c_create_container = "echo $container_name$i IP:${ip}:$network; docker run --net $network --ip $ip -it --name $container_name $image"
-    open_terminal $container_name$i $c_create_container
+    open_terminal $container_name $c_create_container
 }
 
 #function : create_network
@@ -98,9 +98,9 @@ function delete_network($name, $number){
     }
 }
 
-#function : print_containers
-    #print the list of all container
-    #parameters :
+#function : print container or network
+    #print the list of all container or all etworks
+    #parameters : $instruction
 function print($instruction){
     If($instruction -eq "container"){
         $c_show_list = "docker ps -a" #show list of all containers
@@ -111,7 +111,6 @@ function print($instruction){
         $running_network = & Invoke-Expression $c_show_list | Out-String
         Write-Host $running_network
     }
-
 }
 
 #entry point of the script
