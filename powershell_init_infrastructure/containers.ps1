@@ -9,22 +9,32 @@ function parse_file($path, $separator){
     foreach($line in (Get-Content $path)){
         $nline = $line.Split($separator)
         $array.Add($nline)
-        #check if we need to create a new network or not
-        $tmp_n_name = $nline[1].Split(":")[0]
-        if($current_network_name -ne $tmp_n_name){
-            if($initialised_network.Contains($tmp_n_name)){
-                Write-Host "network already exist"
-            }else{
-                Write-Host "new network $tmp_n_name"
-                $initialised_network = $initialised_network + $tmp_n_name
-                $current_network_name = $tmp_n_name
-                $tmp_n_addr = $nline[1].Split(":")[1].Split(".")[0] + "." + $nline[1].Split(":")[1].Split(".")[1] + "." + $nline[1].Split(":")[1].Split(".")[2] + "." + "0/24"
-                create_network $current_network_name $tmp_n_addr
-            }
-        }
 
-        #create the container node
-        create_single_container $nline[0] $nline[2] $nline[1].Split(":")[0] $nline[1].Split(":")[1]
+        if($check_rt=$nline[1].Split(":")[0] -eq "rt"){
+            Write-Host "Need a router between"$nline[1].Split(":")[1]"and"$nline[1].Split(":")[3]"the node (container)"$nline[1].Split(":")[2]"is used as a router"
+            $tmp_rt_network = $nline[1].Split(":")[3]
+            $tmp_rt_container = $nline[1].Split(":")[2]
+            Write-Host "docker network connect"$tmp_rt_network $tmp_rt_container
+            #Invoke-Expression "docker network connect"$tmp_rt_network $tmp_rt_container
+            Write-Host "Router not done bug on the current version"
+        }else{
+            #check if we need to create a new network or not
+            $tmp_n_name = $nline[1].Split(":")[0]
+            if($current_network_name -ne $tmp_n_name){
+                if($initialised_network.Contains($tmp_n_name)){
+                   Write-Host "network already exist"
+                }else{
+                   Write-Host "new network $tmp_n_name"
+                   $initialised_network = $initialised_network + $tmp_n_name
+                   $current_network_name = $tmp_n_name
+                   $tmp_n_addr = $nline[1].Split(":")[1].Split(".")[0] + "." + $nline[1].Split(":")[1].Split(".")[1] + "." + $nline[1].Split(":")[1].Split(".")[2] + "." + "0/24"
+                   create_network $current_network_name $tmp_n_addr
+                }
+            }
+
+            #create the container node
+            create_single_container $nline[0] $nline[2] $nline[1].Split(":")[0] $nline[1].Split(":")[1]
+        }
     }
 }
 
@@ -41,7 +51,7 @@ function open_terminal($container_name, $command){
     #parameters : $container_name, $image, $network, $ip, $number
 function create_containers($container_name, $image, $network, $ip, $number){
     for($i =1; $i -le $number; $i++){
-        $c_create_container = "echo $container_name$i IP:$ip; docker run --net $network --ip $ip -it --name $container_name$i $image"
+        $c_create_container = "echo $container_name$i IP:${ip}:$network; docker run --net $network --ip $ip -it --name $container_name$i $image"
         open_terminal $container_name$i $c_create_container
     }
 }
@@ -50,7 +60,7 @@ function create_containers($container_name, $image, $network, $ip, $number){
     #create new container
     #parameters : $container_name, $image, $network, $ip
 function create_single_container($container_name, $image, $network, $ip){
-    $c_create_container = "echo $container_name$i IP:$ip; docker run --net $network --ip $ip -it --name $container_name $image"
+    $c_create_container = "echo $container_name$i IP:${ip}:$network; docker run --net $network --ip $ip -it --name $container_name $image"
     open_terminal $container_name$i $c_create_container
 }
 
