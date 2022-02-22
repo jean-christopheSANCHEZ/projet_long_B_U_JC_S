@@ -14,9 +14,7 @@ function parse_file($path, $separator){
             Write-Host "Need a router between"$nline[1].Split(":")[1]"and"$nline[1].Split(":")[3]"the node (container)"$nline[1].Split(":")[2]"is used as a router"
             $tmp_rt_network = $nline[1].Split(":")[3]
             $tmp_rt_container = $nline[1].Split(":")[2]
-            Write-Host "docker network connect"$tmp_rt_network $tmp_rt_container
-            #Invoke-Expression "docker network connect"$tmp_rt_network $tmp_rt_container
-            Write-Host "Router not done bug on the current version"
+            docker network connect $tmp_rt_network $tmp_rt_container
         }else{
             #check if we need to create a new network or not
             $tmp_n_name = $nline[1].Split(":")[0]
@@ -107,6 +105,13 @@ function print($instruction){
         $running_containers = & Invoke-Expression $c_show_list | Out-String
         Write-Host $running_containers
     }Elseif($instruction -eq "network"){
+        $c_show_list = "docker network ls" #show list of network
+        $running_network = & Invoke-Expression $c_show_list | Out-String
+        Write-Host $running_network
+    }Elseif($instruction -eq "all"){
+        $c_show_list = "docker ps -a" #show list of all containers
+        $running_containers = & Invoke-Expression $c_show_list | Out-String
+        Write-Host $running_containers
         $c_show_list = "docker network ls" #show list of network
         $running_network = & Invoke-Expression $c_show_list | Out-String
         Write-Host $running_network
