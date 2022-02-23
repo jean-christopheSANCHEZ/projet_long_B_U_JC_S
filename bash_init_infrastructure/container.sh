@@ -46,7 +46,7 @@ function parse_file(){
     #open a terminal in the current container
     #parameters : $container_name, $image, $number
 function open_terminal(){
-   /bin/sh
+    xterm -hold -e "$1" &
 }
 
 #function : create_containers
@@ -55,9 +55,8 @@ function open_terminal(){
 function create_containers(){
     for ((i =1; i <= $5; i++))
     do
-        #$c_create_container = "echo $1$i IP:${4}:$3; docker run --net $3 --ip $4 -it --name $1$i $2"
-        #open_terminal $1$i $c_create_container
-        open_terminal
+        c_create_container="echo $1$i IP:${4}:$3; docker run --net $3 --ip $4 -it --name $1$i $2"
+        open_terminal "$c_create_container"
     done
 }
 
