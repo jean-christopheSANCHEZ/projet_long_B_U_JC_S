@@ -6,41 +6,14 @@
     #parameters : $path, $separator
 function parse_file(){
     echo "Parsing file $1 with $2 as a separator"
-    #$array = [System.Collections.ArrayList]@()
-    #$initialised_network = ""
-    #$current_network_name =""
-    #foreach($line in (Get-Content $1)){
-    #    $nline = $line.Split($2)
-    #    $array.Add($nline)
-#
-#    #    if($check_rt=$nline[1].Split(":")[0] -eq "rt"){
-#    #        echo "Need a router between"$nline[1].Split(":")[1]"and"$nline[1].Split(":")[3]"the node (container)"$nline[1].Split(":")[2]"is used as a router"
-#    #        $tmp_rt_network = $nline[1].Split(":")[3]
-#    #        $tmp_rt_container = $nline[1].Split(":")[2]
-#    #        echo "docker network connect"$tmp_rt_network $tmp_rt_container
-#    #        #Invoke-Expression "docker network connect"$tmp_rt_network $tmp_rt_container
-#    #        echo "Router not done bug on the current version"
-#    #    }else{
-#    #        #check if we need to create a new network or not
-#    #        $tmp_n_name = $nline[1].Split(":")[0]
-#    #        if($current_network_name -ne $tmp_n_name){
-#    #            if($initialised_network.Contains($tmp_n_name)){
-#    #               echo "network already exist"
-#    #            }else{
-#    #               echo "new network $tmp_n_name"
-#    #               $initialised_network = $initialised_network + $tmp_n_name
-#    #               $current_network_name = $tmp_n_name
-#    #               $tmp_n_addr = $nline[1].Split(":")[1].Split(".")[0] + "." + $nline[1].Split(":")[1].Split(".")[1] + "." + $nline[1].Split(":")[1].Split(".")[2] + "." + "0/24"
-#    #               create_network $current_network_name $tmp_n_addr
-#    #            }
-#    #        }
-#
-#    #        #create the container node
-#    #        create_single_container $nline[0] $nline[2] $nline[1].Split(":")[0] $nline[1].Split(":")[1]
-#    #    }
-    #}
+    file=$1
+    separator=$2
+    while IFS= read -r line
+    do
+        element=$(echo $line | tr "$separator" "\n") #split with $2
+	echo $element
+    done < $file
 }
-
 
 #function : open_terminal
     #open a terminal in the current container
@@ -132,7 +105,7 @@ then
     then
         create_containers $2 $3 $4 $5 $6
     else
-        echo "Wrong script call for create mode : .\containers.ps1 create container_name image network ip number_of_containers"
+        echo "Wrong script call for create mode : ./containers.sh create container_name image network ip number_of_containers"
     fi
 #CREATE SUBNET MODE#
 elif [[ $1 == "create_network" ]]
@@ -142,7 +115,7 @@ then
     then
         create_network $2 $3
     else
-        echo "Wrong script call for create_network mode : .\containers.ps1 create_network name addr"
+        echo "Wrong script call for create_network mode : ./containers.sh create_network name addr"
     fi
 #DELETE MODE#
 elif [[ $1 == "delete" ]]
@@ -157,10 +130,10 @@ then
         then
             delete_network $3 $4
         else
-            echo "Wrong script call for delete mode : .\containers.ps1 delete mode name number"
+            echo "Wrong script call for delete mode : ./containers.sh delete mode name number"
         fi
     else
-        echo "Wrong script call for delete mode : .\containers.ps1 delete mode name number"
+        echo "Wrong script call for delete mode : ./containers.sh delete mode name number"
     fi
 #PRINT MODE#
 elif [[ $1 == "print" ]]
@@ -170,7 +143,7 @@ then
     then
         print $2
     else
-        echo "Wrong script call for print mode : .\containers.ps1 print instruction"
+        echo "Wrong script call for print mode : ./containers.sh print instruction"
     fi
 #PARSE FILE MODE#
 elif [[ $1 == "parse" ]]
@@ -180,7 +153,7 @@ then
     then
         parse_file $2 $3
     else
-        echo "Wrong script call for parse file mode : .\containers.ps1 parse file_path separator"
+        echo "Wrong script call for parse file mode : ./containers.sh parse file_path separator"
     fi
 else
     echo "Invalid script command"
