@@ -14,6 +14,7 @@ function parse_file($path, $separator){
             Write-Host "Need a router between"$nline[1].Split(":")[1]"and"$nline[1].Split(":")[3]"the node (container)"$nline[1].Split(":")[2]"is used as a router"
             $tmp_rt_network = $nline[1].Split(":")[3]
             $tmp_rt_container = $nline[1].Split(":")[2]
+            sleep -s 5
             docker network connect $tmp_rt_network $tmp_rt_container
         }else{
             #check if we need to create a new network or not
