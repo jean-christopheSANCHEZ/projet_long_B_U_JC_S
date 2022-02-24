@@ -25,16 +25,22 @@ function parse_file(){
 	ip=${element["net"]#*:}
 	echo $ip
 	network=$(echo ${element["net"]%$ip} | sed 's/\://g')
-	if [[ "$list_network" == *"$network"*  ]]
+	if [[ "$network" == "rt" ]]
 	then
-	    echo $network" : network already exist"
-        else
-	    echo "Need to create a new network "$network
-	    list_network="$list_network$network"
-	    net_tmp=$(echo ${ip%?})
-    	    end_addr_net="0/24"
-	    net_ip_w_mask=$(echo $net_tmp$end_addr_net)
-	    create_network $network $net_ip_w_mask 
+	    echo "need a router"
+	else
+	    if [[ "$list_network" == *"$network"*  ]]
+	    then
+	        echo $network" : network already exist"
+            else
+	        echo "Need to create a new network "$network
+	        list_network="$list_network$network"
+	        net_tmp=$(echo ${ip%?})
+    	        end_addr_net="0/24"
+	        net_ip_w_mask=$(echo $net_tmp$end_addr_net)
+	        create_network $network $net_ip_w_mask 
+	    fi
+	    create_single_container ${element["node"]} ${element["img"]} $network $ip
 	fi
 
     done < "$file"
@@ -63,8 +69,8 @@ function create_containers(){
     #create new container
     #parameters : $container_name, $image, $network, $ip
 function create_single_container(){
-    $c_create_container = "echo $1$i IP:${4}:$3; docker run --net $3 --ip $4 -it --name $1 $2"
-    open_terminal $1 $c_create_container
+    c_create_container="echo $1 IP:${4}:$3; docker run --net $3 --ip $4 -it --name $1 $2"
+    open_terminal "$c_create_container"
 }
 
 
