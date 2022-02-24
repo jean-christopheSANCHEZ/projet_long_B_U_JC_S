@@ -6,13 +6,15 @@
     #parameters : $path, $separator
 function parse_file(){
     echo "Parsing file $1 with $2 as a separator"
-    file=$1
-    separator=$2
+    file="$1"
+    separator="$2"
+    element=("" "" "")
+    echo ${element[@]}
     while IFS= read -r line
     do
-        element=$(echo $line | tr "$separator" "\n") #split with $2
-	echo $element
-    done < $file
+        $element=$(echo "$line" | tr "$separator" "\n") #split with $2
+	echo -e "$element"
+    done < "$file"
 }
 
 #function : open_terminal
