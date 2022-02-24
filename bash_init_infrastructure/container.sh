@@ -8,12 +8,35 @@ function parse_file(){
     echo "Parsing file $1 with $2 as a separator"
     file="$1"
     separator="$2"
-    element=("" "" "")
-    echo ${element[@]}
+    declare -A element=( ['node']="test1" ['net']="ip:lol" ['img']="alpine" ['tmp']="tempon" )
+    list_network=""
     while IFS= read -r line
     do
-        $element=$(echo "$line" | tr "$separator" "\n") #split with $2
-	echo -e "$element"
+	element["tmp"]=${line#*/}
+	element["node"]=${line%"${element["tmp"]}"}
+	element["img"]=${line#*/*/}
+        element["net"]=${element["tmp"]%"${element["img"]}"}
+	#removing / from elements
+	element["node"]=$(echo ${element["node"]} | sed 's/\///g')
+	echo  "node="${element["node"]}
+	element["net"]=$(echo ${element["net"]} | sed 's/\///g')
+	echo  "net="${element["net"]}
+	echo "img="${element["img"]}
+	ip=${element["net"]#*:}
+	echo $ip
+	network=$(echo ${element["net"]%$ip} | sed 's/\://g')
+	if [[ "$list_network" == *"$network"*  ]]
+	then
+	    echo $network" : network already exist"
+        else
+	    echo "Need to create a new network "$network
+	    list_network="$list_network$network"
+	    net_tmp=$(echo ${ip%?})
+    	    end_addr_net="0/24"
+	    net_ip_w_mask=$(echo $net_tmp$end_addr_net)
+	    create_network $network $net_ip_w_mask 
+	fi
+
     done < "$file"
 }
 
