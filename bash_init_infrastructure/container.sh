@@ -8,7 +8,7 @@ function parse_file(){
     echo "Parsing file $1 with $2 as a separator"
     file="$1"
     separator="$2"
-    declare -A element=( ['node']="test1" ['net']="ip:lol" ['img']="alpine" ['tmp']="tempon" )
+    declare -A element=( ['node']="test1" ['net']="ip:lol" ['img']="alpine" ['tmp']="tampon" )
     list_network=""
     while IFS= read -r line
     do
@@ -27,8 +27,22 @@ function parse_file(){
 	network=$(echo ${element["net"]%$ip} | sed 's/\://g')
 	if [[ "$network" == "rt" ]]
 	then
-	    echo "need a router"
-	else
+	    net_tmp=${ip#*:}
+	    net_1=${ip%"$net_tmp"}
+	    net_2=${ip#*:*:}
+	    node=${net_tmp%"$net_2"}
+	    net_1=$(echo ${net_1} | sed 's/\://')
+	    #net_2=${net_2} 
+	    net_2=$(echo $net_2 | cut -d':' -f1)
+	    #net_2=$(echo ${net_2} | sed 's/\://')
+	    node=$(echo ${node} | sed 's/\://')
+	    echo "net_1 "$net_1
+	    echo "net_2 "$net_2
+	    echo "node "$node
+	    echo "need a router between "$net_1" and "$net_2 " node(container)  "$node " worked as a router to "
+	    sleep 5
+            docker network connect $net_2 $node
+        else
 	    if [[ "$list_network" == *"$network"*  ]]
 	    then
 	        echo $network" : network already exist"
