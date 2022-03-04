@@ -18,6 +18,7 @@ int main(int argc, char *argv[]){
 	int sockfd;
 	struct sockaddr_in self;
 	char buffer[MAX_BUF];
+	pid_t childpid;	
 
 	//create socket
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -56,9 +57,17 @@ int main(int argc, char *argv[]){
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr,(void *)&addrlen);
 		printf("%s:%d connected\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 		
+		if((childpid = fork()) == 0){
+			close(sockfd);
+			while(1){
+				recv(clientfd, buffer, MAX_BUF, 0);
+				printf("id:%s\n", buffer);
+			}
+		}
+		
 		//recv the id and print it
-		recv(clientfd, buffer, MAX_BUF, 0);
-		printf("id:%s\n", buffer);
+		//recv(clientfd, buffer, MAX_BUF, 0);
+		//printf("id:%s\n", buffer);
 
 		//Echo back the received data to the client
 		//send(clientfd, buffer, recv(clientfd, buffer, MAX_BUF, 0), 0);
