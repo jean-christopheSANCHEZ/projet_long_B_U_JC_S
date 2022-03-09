@@ -6,16 +6,8 @@
 #include <resolv.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include <string.h>
 
-#define MAX_BUF		1000
-
-
-void display_message(char* str){
-  char buffer[100];
-  strcpy(buffer,str);
-  printf("Bonjour, %s\n", buffer);
-}
+#define MAX_BUF		16
 
 int main(int argc, char *argv[]){   
 	if(argc!=2){
@@ -26,8 +18,7 @@ int main(int argc, char *argv[]){
 	int sockfd;
 	struct sockaddr_in self;
 	char buffer[MAX_BUF];
-	pid_t childpid;
-  int yes = 1;  
+	pid_t childpid;	
 
 	//create socket
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -43,8 +34,7 @@ int main(int argc, char *argv[]){
 	self.sin_addr.s_addr = INADDR_ANY;
 
 	// Assign a port number to the socket
-  setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));                                                                      
-  if (bind(sockfd, (struct sockaddr*)&self, sizeof(self)) != 0)
+    if (bind(sockfd, (struct sockaddr*)&self, sizeof(self)) != 0)
 	{
 		perror("socket:bind()");
 		exit(errno);
@@ -58,15 +48,15 @@ int main(int argc, char *argv[]){
 	}
 
 	//Server run continuously
-		
-		int clientfd;
-    struct sockaddr_in client_addr;
+	while (1)
+	{	int clientfd;
+		struct sockaddr_in client_addr;
 		int addrlen=sizeof(client_addr);
 
 		//accept an incomming connection
 		clientfd = accept(sockfd, (struct sockaddr*)&client_addr,(void *)&addrlen);
 		printf("%s:%d connected\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-/*		
+		
 		if((childpid = fork()) == 0){
 			close(sockfd);
 			while(1){
@@ -74,9 +64,6 @@ int main(int argc, char *argv[]){
 				printf("id:%s\n", buffer);
 			}
 		}
-*/
-    read(clientfd, &buffer, MAX_BUF);
-    display_message(buffer);
 		
 		//recv the id and print it
 		//recv(clientfd, buffer, MAX_BUF, 0);
@@ -86,12 +73,10 @@ int main(int argc, char *argv[]){
 		//send(clientfd, buffer, recv(clientfd, buffer, MAX_BUF, 0), 0);
 
 		//Close data connection
-    //close(clientfd);
-  
-
+		close(clientfd);
+	}
 
 	//Clean up
-	close(clientfd);
+	close(sockfd);
 	return 0;
 }
-
