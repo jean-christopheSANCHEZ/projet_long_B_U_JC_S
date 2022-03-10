@@ -1,0 +1,8 @@
+Compiler :
+gcc -m32 (pour 32bits) -c -Wall -Werror prog.s
+
+Binaire:
+objcopy -O binary --only-section=.text prog.o nom_shellcode
+
+Verifier asm:
+objdump -b binary -D -mi386 -Mx86_64 (si 64 bits) nom_shellcode
