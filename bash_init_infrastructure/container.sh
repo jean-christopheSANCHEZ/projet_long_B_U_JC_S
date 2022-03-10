@@ -64,7 +64,7 @@ function parse_file(){
     #open a terminal in the current container
     #parameters : $container_name, $image, $number
 function open_terminal(){
-    xterm -hold -e "$1" &
+    xterm -hold -ls -xrm 'XTerm*selectToClipboard: true' -e "$1" &
 }
 
 #function : create_containers
