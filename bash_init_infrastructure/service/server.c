@@ -12,7 +12,7 @@
 
 
 void display_message(char* str){
-  char buffer[100];
+  char buffer[200];
   strcpy(buffer,str);
   printf("Bonjour, %s\n", buffer);
 }
